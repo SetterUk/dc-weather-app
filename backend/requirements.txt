@@ -1,0 +1,12 @@
+# Python Web Framework
+fastapi
+uvicorn[standard]
+
+# For handling API requests
+requests
+
+# For loading environment variables from .env file
+python-dotenv
+
+# OpenAI's official library for GPT-3.5
+openai
