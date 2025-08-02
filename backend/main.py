@@ -10,7 +10,10 @@ from typing import Optional
 from dotenv import load_dotenv
 from openai import OpenAI
 from datetime import datetime
+from timezonefinder import TimezoneFinder
 import logging
+from datetime import datetime
+import pytz
 
 # Import our custom modules
 from core.hero_profiles import HERO_PROFILES
@@ -172,6 +175,15 @@ def get_weather_dashboard_endpoint(request: WeatherRequest):
 
     current_weather = full_weather_data.get('current', {})
     current_weather['condition_text'] = WMO_WEATHER_CODES.get(current_weather.get('weather_code', 0), 'Unknown')
+    # 🕒 Get local time from coordinates
+    tf = TimezoneFinder()
+    tz_name = tf.timezone_at(lat=coords['latitude'], lng=coords['longitude'])
+    if tz_name:
+        tz = pytz.timezone(tz_name)
+        local_time = datetime.now(tz).strftime("%H:%M:%S")
+    else:
+        local_time = "Unknown"
+    current_weather['local_time'] = local_time
     # Map to frontend expected keys with enhanced Open-Meteo data
     mapped_current_weather = {
         'temperature': current_weather.get('temperature_2m'),
@@ -187,6 +199,7 @@ def get_weather_dashboard_endpoint(request: WeatherRequest):
         'precipitation': current_weather.get('precipitation'),
         'cloudCover': current_weather.get('cloud_cover'),
         'isDay': current_weather.get('is_day'),
+        'localTime': local_time
     }
     
     hero_profile = select_hero(current_weather)
