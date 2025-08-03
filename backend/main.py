@@ -31,7 +31,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",  # Local development
-        "https://your-frontend-domain.vercel.app",  # Replace with your Vercel domain
+        "https://https://frontend-d30imq72n-setteruks-projects.vercel.app",  # Replace with your Vercel domain
         "https://*.vercel.app",  # Allow all Vercel subdomains
     ],
     allow_credentials=True,

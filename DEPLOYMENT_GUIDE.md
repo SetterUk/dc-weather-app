@@ -63,7 +63,7 @@ NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.railway.app
 ```
 
 ### 3.3 Update CORS in Backend
-Replace `your-frontend-domain.vercel.app` in `backend/main.py` with your actual Vercel domain.
+Replace `https://frontend-d30imq72n-setteruks-projects.vercel.app` in `backend/main.py` with your actual Vercel domain.
 
 ## 🔄 Step 4: Connect Frontend to Backend
 
