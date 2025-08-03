@@ -18,29 +18,37 @@ from core.dispatcher import select_hero
 
 # Import routes
 from routes.geocode import router as geocode_router
+from routes.chat import router as chat_router
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(title="DC Weather App API", version="1.0.0")
 
-# Include routers
-app.include_router(geocode_router)
-
-# --- Create a directory for static files (audio) and mount it ---
-os.makedirs("static", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
-# --- CORS Middleware ---
+# Configure CORS for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",  # Local development
+        "https://your-frontend-domain.vercel.app",  # Replace with your Vercel domain
+        "https://*.vercel.app",  # Allow all Vercel subdomains
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files for audio
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Include routers
+app.include_router(geocode_router)
+app.include_router(chat_router)
+
+# --- Create a directory for static files (audio) and mount it ---
+os.makedirs("static", exist_ok=True)
+
 
 # --- API Clients and Constants ---
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -146,8 +154,12 @@ def generate_tts_audio(text: str, voice: str = "onyx"):
 
 # --- API Endpoints ---
 @app.get("/")
-def read_root():
-    return {"Status": "Watchtower API is online"}
+async def root():
+    return {"message": "DC Weather App API is running!"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "DC Weather App API"}
 
 @app.post("/api/get-weather-dashboard")
 def get_weather_dashboard_endpoint(request: WeatherRequest):
